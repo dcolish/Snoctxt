@@ -6,12 +6,47 @@ int count_ln(FILE* foo) {
     int lines = 0;
     size_t len;
     while(fgetln(foo, &len)) {
-        foo += len;
         lines++;
     }
     return lines;
 }
 
+
+char** copy_lines(FILE* snoc_dst, int nlines) {
+    int i = 0;
+    char* lnptr = NULL;
+    char** lines = NULL;
+    size_t len;
+
+    rewind(snoc_dst);
+    lines = (char**)malloc(sizeof(char*) * nlines);
+    while((lnptr = fgetln(snoc_dst, &len))) {
+        lines[i] = (char*)malloc(sizeof(char) * len+1);
+        strncpy(lines[i], lnptr, len);
+        i++;
+    }
+
+    rewind(snoc_dst);
+    return lines;
+}
+
+
+void fprintln(FILE* dst, char** lines, int nlines) {
+    int i = 0;
+        
+    for (i = 0; i < nlines; i++) {
+        fprintf(dst, "%s", lines[i]);
+    }
+}
+
+void free_array(void** array, int size){
+    int i;
+    for (i = 0; i < size; i++) {
+        free(array[i]);
+    }
+
+    free(array);
+}
 
 int main(int argc, char *argv []) {
     if (argc > 0) {
@@ -19,35 +54,26 @@ int main(int argc, char *argv []) {
         size_t len = 0;
         int nlines = 0;
         int ilines = 0;
-        char* lnptr = NULL;
         char** lines = NULL;
+        char** newlines = NULL;
         char* s_snoc_src = argv[1];
         char* s_snoc_dst = argv[2];
         FILE* snoc_src = fopen(s_snoc_src, "r");
         FILE* snoc_dst = fopen(s_snoc_dst, "r+");
 
         nlines = count_ln(snoc_dst);
-        lines = (char**)malloc(sizeof(char) * 512 * nlines);
-        rewind(snoc_dst);
+        ilines = count_ln(snoc_src);
+        lines = copy_lines(snoc_dst, nlines);
 
-        for (i = 0; i < nlines; i++) {
-            lnptr = fgetln(snoc_dst, &len);
-            lines[i] = (char*)malloc(sizeof(char) * len);
-            strcpy(lines[i], lnptr);
-        }
+        newlines =  copy_lines(snoc_src, ilines);
+        snoc_dst = freopen(s_snoc_dst, "w", snoc_dst);
 
-        rewind(snoc_dst);
+        fprintln(snoc_dst, newlines, ilines);
+        fprintln(snoc_dst, lines, nlines);
 
-        while(lnptr = fgetln(snoc_src, &len)){
-            fprintf(snoc_dst, "%s", lnptr);
-            ilines += len;
-        }
-
-        fseek(snoc_dst, ilines, SEEK_SET);
-        for (i = 0; i < nlines; i++) {
-            fprintf(snoc_dst, "%s", lines[i]);
-        }
-
+        free_array((void**)lines, nlines);
+        free_array((void**)newlines, ilines);
+        
         fclose(snoc_src);
         fclose(snoc_dst);
     }
