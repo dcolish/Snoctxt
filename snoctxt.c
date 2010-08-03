@@ -1,3 +1,9 @@
+# Copyright 2010 Dan Colish
+# All rights reserved.
+#
+# This file is part of 'snoctxt' and is distributed under the BSD license.
+# See LICENSE for more details.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
