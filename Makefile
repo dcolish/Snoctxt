@@ -1,7 +1,9 @@
 CC=gcc
-CFLAGS=-g
+CFLAGS=-g -Wall
 .SUFFIXES: .c .o
 
-all: snoctxt.o
-	$(CC) $(CFLAGS) -o snoctxt snoctxt.o
+.c.o: src/snoctext.c
+	$(CC) $(CFLAGS) -o build/$@ src/$<
 
+all: build/snoctxt.o
+	$(CC) $(CFLAGS) -o build/snoctxt build/snoctxt.o
