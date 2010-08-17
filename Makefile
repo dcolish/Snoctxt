@@ -2,8 +2,13 @@ CC=gcc
 CFLAGS=-g -Wall
 .SUFFIXES: .c .o
 
-.c.o: src/snoctext.c
-	$(CC) $(CFLAGS) -o build/$@ src/$<
+all: clean
+	cp src/snoctxt.c build/
+	cd build && \
+	$(CC) $(CFLAGS) -o snoctxt.o -c snoctxt.c && \
+	$(CC) $(CFLAGS) -o snoctxt snoctxt.o
 
-all: build/snoctxt.o
-	$(CC) $(CFLAGS) -o build/snoctxt build/snoctxt.o
+
+clean:
+	rm -r build
+	mkdir -p build
